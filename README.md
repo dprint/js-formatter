@@ -1,3 +1,3 @@
 # dprint - JS Wasm Formatter
 
-Formatter for dprint.
+JS formatter for dprint Wasm plugins.
