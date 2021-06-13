@@ -1,0 +1,12 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: bvm/gh-action@v1.1.0
+      - name: Test
+        run: deno test --allow-net
+      - name: Package
+        run: deno run --unstable --allow-read --allow-write deployment/npm/setup.js
