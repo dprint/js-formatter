@@ -1,12 +1,12 @@
 {
-  "name": "@dprint/wasm-formatter",
+  "name": "@dprint/formatter",
   "version": "0.0.0",
   "description": "Wasm formatter for dprint plugins.",
   "main": "mod.js",
   "types": "mod.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dprint/js-wasm-formatter.git"
+    "url": "git+https://github.com/dprint/js-formatter.git"
   },
   "keywords": [
     "dprint",
@@ -16,7 +16,7 @@
   "author": "David Sherret",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dprint/js-wasm-formatter/issues"
+    "url": "https://github.com/dprint/js-formatter/issues"
   },
-  "homepage": "https://github.com/dprint/js-wasm-formatter#readme"
+  "homepage": "https://github.com/dprint/js-formatter#readme"
 }

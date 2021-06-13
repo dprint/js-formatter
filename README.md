@@ -30,7 +30,7 @@ console.log(tsFormatter.formatText("file.ts", "const   t    = 5;"));
 ## Node.js
 
 ```ts
-import { createFromBuffer } from "@dprint/wasm-formatter";
+import { createFromBuffer } from "@dprint/formatter";
 
 const formatter = createFromBuffer(fs.readFileSync("./json.wasm"));
 
