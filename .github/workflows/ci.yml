@@ -15,10 +15,15 @@ jobs:
       - name: Package
         if: startsWith(github.ref, 'refs/tags/')
         run: deno run --unstable --allow-read --allow-write deployment/npm/setup.js ${{steps.get_tag_version.outputs.TAG_VERSION}}
+      - uses: actions/setup-node@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          node-version: '14.x'
+          registry-url: 'https://registry.npmjs.org'
       - name: npm publish
         if: startsWith(github.ref, 'refs/tags/')
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           cd deployment/npm
-          npm publish
+          npm publish --access public
