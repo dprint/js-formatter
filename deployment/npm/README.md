@@ -16,6 +16,6 @@ console.log(formatter.formatText("test.json", "{test: 5}"));
 
 ## Plugins
 
-* [@dprint/json](https://www.npmjs.com/package/@dprint/json)
-* [@dprint/typescript](https://www.npmjs.com/package/@dprint/typescript)
-* [@dprint/markdown](https://www.npmjs.com/package/@dprint/markdown)
+- [@dprint/json](https://www.npmjs.com/package/@dprint/json)
+- [@dprint/typescript](https://www.npmjs.com/package/@dprint/typescript)
+- [@dprint/markdown](https://www.npmjs.com/package/@dprint/markdown)
