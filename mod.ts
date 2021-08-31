@@ -101,8 +101,8 @@ export function createStreaming(
   // it no longer exists on the `WebAssembly` object, so use an `any` type here.
   if (
     // deno-lint-ignore no-explicit-any
-    (WebAssembly as any).instantiateStreaming == null ||
-    typeof globalThis?.Deno != null
+    (WebAssembly as any).instantiateStreaming == null
+    || typeof globalThis?.Deno != null
   ) {
     return getArrayBuffer()
       .then((buffer) => createFromBuffer(buffer));
@@ -195,13 +195,13 @@ export function createFromInstance(
   const pluginSchemaVersion = get_plugin_schema_version();
   const expectedPluginSchemaVersion = 3;
   if (
-    pluginSchemaVersion !== 2 &&
-    pluginSchemaVersion !== expectedPluginSchemaVersion
+    pluginSchemaVersion !== 2
+    && pluginSchemaVersion !== expectedPluginSchemaVersion
   ) {
     throw new Error(
-      `Not compatible plugin. ` +
-        `Expected schema ${expectedPluginSchemaVersion}, ` +
-        `but plugin had ${pluginSchemaVersion}.`,
+      `Not compatible plugin. `
+        + `Expected schema ${expectedPluginSchemaVersion}, `
+        + `but plugin had ${pluginSchemaVersion}.`,
     );
   }
 

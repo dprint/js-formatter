@@ -1,10 +1,6 @@
 // @ts-check
 import * as path from "https://deno.land/std@0.98.0/path/mod.ts";
-import {
-  ModuleKind,
-  Project,
-  ScriptTarget,
-} from "https://deno.land/x/ts_morph@11.0.1/mod.ts";
+import { ModuleKind, Project, ScriptTarget } from "https://deno.land/x/ts_morph@11.0.1/mod.ts";
 
 const version = Deno.args[0];
 
