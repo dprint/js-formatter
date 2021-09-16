@@ -12,7 +12,7 @@ JS formatter for dprint Wasm plugins.
 import {
   createStreaming,
   GlobalConfiguration,
-} from "https://deno.land/x/dprint@x.x.x/mod.ts";
+} from "https://deno.land/x/dprint/mod.ts";
 
 const globalConfig: GlobalConfiguration = {
   indentWidth: 2,
