@@ -20,7 +20,7 @@ const globalConfig: GlobalConfiguration = {
 };
 const tsFormatter = await createStreaming(
   // check https://plugins.dprint.dev/ for latest plugin versions
-  fetch("https://plugins.dprint.dev/typescript-0.48.0.wasm"),
+  fetch("https://plugins.dprint.dev/typescript-0.57.0.wasm"),
 );
 
 tsFormatter.setConfig(globalConfig, {
@@ -47,3 +47,4 @@ console.log(formatter.formatText("test.json", "{test: 5}"));
 - [@dprint/typescript](https://www.npmjs.com/package/@dprint/typescript)
 - [@dprint/markdown](https://www.npmjs.com/package/@dprint/markdown)
 - [@dprint/toml](https://www.npmjs.com/package/@dprint/toml)
+- [@dprint/dockerfile](https://www.npmjs.com/package/@dprint/dockerfile)

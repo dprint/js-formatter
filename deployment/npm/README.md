@@ -19,3 +19,5 @@ console.log(formatter.formatText("test.json", "{test: 5}"));
 - [@dprint/json](https://www.npmjs.com/package/@dprint/json)
 - [@dprint/typescript](https://www.npmjs.com/package/@dprint/typescript)
 - [@dprint/markdown](https://www.npmjs.com/package/@dprint/markdown)
+- [@dprint/toml](https://www.npmjs.com/package/@dprint/toml)
+- [@dprint/dockerfile](https://www.npmjs.com/package/@dprint/dockerfile)
