@@ -6,7 +6,7 @@ await build({
   outDir: "./npm",
   package: {
     name: "@dprint/formatter",
-    version: Deno.args[0],
+    version: Deno.args[0] ?? "0.0.0",
     description: "Wasm formatter for dprint plugins.",
     repository: {
       type: "git",
