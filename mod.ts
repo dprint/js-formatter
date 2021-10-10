@@ -102,6 +102,7 @@ export function createStreaming(
   if (
     // deno-lint-ignore no-explicit-any
     (WebAssembly as any).instantiateStreaming == null
+    // deno-shim-ignore
     || typeof globalThis?.Deno != null
   ) {
     return getArrayBuffer()
