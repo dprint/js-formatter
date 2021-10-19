@@ -97,40 +97,9 @@ export function createImportObject(): WebAssembly.Imports {
 export function createStreaming(
   response: Promise<Response>,
 ): Promise<Formatter> {
-  // instantiateStreaming is not working in Deno (issue #309) and in newer versions
-  // it no longer exists on the `WebAssembly` object, so use an `any` type here.
-  if (
-    // deno-lint-ignore no-explicit-any
-    (WebAssembly as any).instantiateStreaming == null
-    // deno-shim-ignore
-    || typeof globalThis?.Deno != null
-  ) {
-    return getArrayBuffer()
-      .then((buffer) => createFromBuffer(buffer));
-  } else {
-    // deno-lint-ignore no-explicit-any
-    return (WebAssembly as any)
-      .instantiateStreaming(
-        response,
-        createImportObject(),
-      )
-      .then((
-        // deno-lint-ignore no-explicit-any
-        obj: any,
-      ) => createFromInstance(obj.instance));
-  }
-
-  function getArrayBuffer() {
-    if (isResponse(response)) {
-      return response.arrayBuffer();
-    } else {
-      return response.then((response) => response.arrayBuffer());
-    }
-
-    function isResponse(response: unknown): response is Response {
-      return (response as Response).arrayBuffer != null;
-    }
-  }
+  return WebAssembly
+    .instantiateStreaming(response,createImportObject())
+    .then((obj) => createFromInstance(obj.instance));
 }
 
 /**
