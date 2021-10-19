@@ -1,12 +1,13 @@
-import { build } from "https://deno.land/x/dnt@0.0.9/mod.ts";
+import { build } from "https://deno.land/x/dnt@0.0.11/mod.ts";
 
 await build({
-  entryPoint: "mod.ts",
+  entryPoints: ["mod.ts"],
   typeCheck: true,
+  test: false,
   outDir: "./npm",
   package: {
     name: "@dprint/formatter",
-    version: Deno.args[0] ?? "0.0.0",
+    version: Deno.args[0],
     description: "Wasm formatter for dprint plugins.",
     repository: {
       type: "git",

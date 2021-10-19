@@ -3,13 +3,13 @@ import { createFromBuffer, createStreaming, Formatter, GlobalConfiguration } fro
 
 Deno.test("it should create streaming", async () => {
   const formatter = await createStreaming(
-    fetch("https://plugins.dprint.dev/json-0.12.0.wasm"),
+    fetch("https://plugins.dprint.dev/json-0.13.0.wasm"),
   );
   runGeneralJsonFormatterTests(formatter);
 });
 
 Deno.test("it should create from buffer", async () => {
-  const buffer = await fetch("https://plugins.dprint.dev/json-0.12.0.wasm")
+  const buffer = await fetch("https://plugins.dprint.dev/json-0.13.0.wasm")
     .then((r) => r.arrayBuffer());
   const formatter = createFromBuffer(buffer);
   runGeneralJsonFormatterTests(formatter);
@@ -27,23 +27,21 @@ function runGeneralJsonFormatterTests(formatter: Formatter) {
   assertEquals(formatter.getLicenseText().includes("MIT"), true);
   assertEquals(formatter.getPluginInfo(), {
     name: "dprint-plugin-json",
-    version: "0.12.0",
+    version: "0.13.0",
     configKey: "json",
     fileExtensions: ["json", "jsonc"],
     fileNames: [],
     helpUrl: "https://dprint.dev/plugins/json",
-    configSchemaUrl: "",
+    configSchemaUrl: "https://plugins.dprint.dev/schemas/json-0.13.0.json",
   });
   assertEquals(formatter.getResolvedConfig(), {
-    // todo(dsherret): this is incorrect in the plugin (should be "array.preferSingleLine")
-    arrayPreferSingleLine: true,
+    "array.preferSingleLine": true,
     "commentLine.forceSpaceAfterSlashes": true,
     ignoreNodeCommentText: "dprint-ignore",
     indentWidth: 4,
     lineWidth: 30,
     newLineKind: "lf",
-    // todo(dsherret): this is incorrect in the plugin
-    objectPreferSingleLine: true,
+    "object.preferSingleLine": true,
     useTabs: false,
   });
   assertEquals(
