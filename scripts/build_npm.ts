@@ -1,10 +1,22 @@
-import { build } from "https://deno.land/x/dnt@0.0.11/mod.ts";
+import { build } from "https://deno.land/x/dnt@0.14.0/mod.ts";
 
 await build({
   entryPoints: ["mod.ts"],
   typeCheck: true,
-  test: false,
+  test: true,
   outDir: "./npm",
+  shims: {
+    deno: {
+      test: "dev",
+    },
+    customDev: [{
+      globalNames: ["fetch"],
+      package: {
+        name: "undici",
+        version: "^4.12.1",
+      },
+    }],
+  },
   package: {
     name: "@dprint/formatter",
     version: Deno.args[0],

@@ -1,7 +1,3 @@
-// Copyright 2020-2021 by David Sherret. All rights reserved.
-// This work is licensed under the terms of the MIT license.
-// For a copy, see <https://opensource.org/licenses/MIT>.
-
 /** Formats code. */
 export interface Formatter {
   /**
@@ -89,17 +85,40 @@ export function createImportObject(): WebAssembly.Imports {
   };
 }
 
+export interface ResponseLike {
+  arrayBuffer(): Promise<BufferSource>;
+}
+
 /**
  * Creates a formatter from the specified streaming source.
  * @remarks This is the most efficient way to create a formatter.
  * @param response - The streaming source to create the formatter from.
  */
 export function createStreaming(
-  response: Promise<Response>,
+  response: Promise<ResponseLike>,
 ): Promise<Formatter> {
-  return WebAssembly
-    .instantiateStreaming(response,createImportObject())
-    .then((obj) => createFromInstance(obj.instance));
+  if (typeof WebAssembly.instantiateStreaming === "function") {
+    return WebAssembly
+      // deno-lint-ignore no-explicit-any
+      .instantiateStreaming(response as any, createImportObject())
+      .then((obj) => createFromInstance(obj.instance));
+  } else {
+    // fallback for node.js
+    return getArrayBuffer()
+      .then((buffer) => createFromBuffer(buffer));
+  }
+
+  function getArrayBuffer() {
+    if (isResponse(response)) {
+      return response.arrayBuffer();
+    } else {
+      return response.then((response) => response.arrayBuffer());
+    }
+
+    function isResponse(response: unknown): response is ResponseLike {
+      return (response as Response).arrayBuffer != null;
+    }
+  }
 }
 
 /**
