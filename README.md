@@ -35,8 +35,10 @@ console.log(tsFormatter.formatText("file.ts", "const   t    = 5;"));
 
 ```ts
 import { createFromBuffer } from "@dprint/formatter";
+import { getBuffer } from "@dprint/json";
 
-const formatter = createFromBuffer(fs.readFileSync("./json.wasm"));
+// or provide something like fs.readFileSync("./json.wasm")
+const formatter = createFromBuffer(getBuffer());
 
 console.log(formatter.formatText("test.json", "{test: 5}"));
 ```
