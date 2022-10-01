@@ -33,15 +33,22 @@ console.log(tsFormatter.formatText("file.ts", "const   t    = 5;"));
 
 ## Node.js
 
+Use the following:
+
 ```ts
 import { createFromBuffer } from "@dprint/formatter";
-import { getBuffer } from "@dprint/json";
+// You may have to use `getBuffer` on plugins that haven't updated yet.
+// See the plugins README.md for details.
+import { getPath } from "@dprint/json";
+import * as fs from "fs";
 
-// or provide something like fs.readFileSync("./json.wasm")
-const formatter = createFromBuffer(getBuffer());
+const buffer = fs.readFileSync(getPath());
+const formatter = createFromBuffer(buffer);
 
 console.log(formatter.formatText("test.json", "{test: 5}"));
 ```
+
+Unfortunately Node.js doesn't have any way to cache compiles at the moment and so it will have a slower than ideal startup time.
 
 ### Plugin NPM Packages
 
