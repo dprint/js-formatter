@@ -1,8 +1,7 @@
-import { build } from "https://deno.land/x/dnt@0.14.0/mod.ts";
+import { build } from "https://deno.land/x/dnt@0.39.0/mod.ts";
 
 await build({
   entryPoints: ["mod.ts"],
-  typeCheck: true,
   test: true,
   outDir: "./npm",
   shims: {
@@ -16,6 +15,9 @@ await build({
         version: "^4.12.1",
       },
     }],
+  },
+  compilerOptions: {
+    lib: ["ES2021", "DOM"],
   },
   package: {
     name: "@dprint/formatter",

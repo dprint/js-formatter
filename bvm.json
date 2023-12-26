@@ -1,9 +1,0 @@
-{
-  "binaries": [
-    {
-      "path": "https://bvm.land/deno/1.17.2.json",
-      "checksum": "ca0aff221bb79cf83ac67a1abd568ed1390211589db251e148b560c7b0ea3fbe",
-      "version": "1.17.2"
-    }
-  ]
-}

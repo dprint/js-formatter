@@ -86,7 +86,12 @@ export function createImportObject(): WebAssembly.Imports {
 }
 
 export interface ResponseLike {
+  status: number;
   arrayBuffer(): Promise<BufferSource>;
+  text(): Promise<string>;
+  headers: {
+    get(name: string): string | null;
+  };
 }
 
 /**
@@ -94,30 +99,27 @@ export interface ResponseLike {
  * @remarks This is the most efficient way to create a formatter.
  * @param response - The streaming source to create the formatter from.
  */
-export function createStreaming(
-  response: Promise<ResponseLike>,
+export async function createStreaming(
+  responsePromise: Promise<ResponseLike> | ResponseLike,
 ): Promise<Formatter> {
-  if (typeof WebAssembly.instantiateStreaming === "function") {
+  const response = await responsePromise;
+  if (response.status !== 200) {
+    throw new Error(
+      `Unexpected status code: ${response.status}\n${await response.text()}`,
+    );
+  }
+  if (
+    typeof WebAssembly.instantiateStreaming === "function"
+    && response.headers.get("content-type") === "application/wasm"
+  ) {
     return WebAssembly
       // deno-lint-ignore no-explicit-any
       .instantiateStreaming(response as any, createImportObject())
       .then((obj) => createFromInstance(obj.instance));
   } else {
-    // fallback for node.js
-    return getArrayBuffer()
+    // fallback for node.js or when the content type isn't application/wasm
+    return response.arrayBuffer()
       .then((buffer) => createFromBuffer(buffer));
-  }
-
-  function getArrayBuffer() {
-    if (isResponse(response)) {
-      return response.arrayBuffer();
-    } else {
-      return response.then((response) => response.arrayBuffer());
-    }
-
-    function isResponse(response: unknown): response is ResponseLike {
-      return (response as Response).arrayBuffer != null;
-    }
   }
 }
 
