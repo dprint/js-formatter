@@ -149,7 +149,7 @@ export function createHost(): Host {
               );
               return fileText === formattedText ? 0 : 1;
             } catch (error) {
-              errorText = error;
+              errorText = String(error);
               return 2;
             }
           },
