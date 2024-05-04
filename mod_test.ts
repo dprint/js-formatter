@@ -15,6 +15,47 @@ Deno.test("it should create from buffer", async () => {
   runGeneralJsonFormatterTests(formatter);
 });
 
+Deno.test("it should support host format", async () => {
+  const jsonFormatter = await createStreaming(
+    fetch("https://plugins.dprint.dev/json-0.13.0.wasm"),
+  );
+
+  const markdownFormatter = await createStreaming(
+    fetch("https://plugins.dprint.dev/markdown-0.16.3.wasm"),
+  );
+  const formatted = markdownFormatter.formatText(
+    "file.md",
+    `# heading1
+\`\`\`json
+{"a":[1,2,3]}
+\`\`\`
+
+\`\`\`ts
+console . log ( value )
+\`\`\`
+`,
+    undefined,
+    (filePath, fileText) => {
+      return filePath.endsWith(".json")
+        ? jsonFormatter.formatText(filePath, fileText)
+        : fileText;
+    },
+  );
+  assertEquals(
+    formatted,
+    `# heading1
+
+\`\`\`json
+{ "a": [1, 2, 3] }
+\`\`\`
+
+\`\`\`ts
+console . log ( value )
+\`\`\`
+`,
+  );
+});
+
 function runGeneralJsonFormatterTests(formatter: Formatter) {
   const globalConfig: GlobalConfiguration = {
     indentWidth: 4,
