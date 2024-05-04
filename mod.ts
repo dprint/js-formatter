@@ -176,8 +176,8 @@ export async function createStreaming(
     );
   }
   if (
-    typeof WebAssembly.instantiateStreaming === "function" &&
-    response.headers.get("content-type") === "application/wasm"
+    typeof WebAssembly.instantiateStreaming === "function"
+    && response.headers.get("content-type") === "application/wasm"
   ) {
     const host = createHost();
     const { instance } = await WebAssembly
@@ -249,13 +249,13 @@ export function createFromInstance(
   const pluginSchemaVersion = get_plugin_schema_version();
   const expectedPluginSchemaVersion = 3;
   if (
-    pluginSchemaVersion !== 2 &&
-    pluginSchemaVersion !== expectedPluginSchemaVersion
+    pluginSchemaVersion !== 2
+    && pluginSchemaVersion !== expectedPluginSchemaVersion
   ) {
     throw new Error(
-      `Not compatible plugin. ` +
-        `Expected schema ${expectedPluginSchemaVersion}, ` +
-        `but plugin had ${pluginSchemaVersion}.`,
+      `Not compatible plugin. `
+        + `Expected schema ${expectedPluginSchemaVersion}, `
+        + `but plugin had ${pluginSchemaVersion}.`,
     );
   }
 

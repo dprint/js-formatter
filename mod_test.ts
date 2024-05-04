@@ -1,10 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.210.0/assert/mod.ts";
-import {
-  createFromBuffer,
-  createStreaming,
-  Formatter,
-  GlobalConfiguration,
-} from "./mod.ts";
+import { createFromBuffer, createStreaming, Formatter, GlobalConfiguration } from "./mod.ts";
 
 Deno.test("it should create streaming", async () => {
   const formatter = await createStreaming(
