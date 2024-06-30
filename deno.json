@@ -8,9 +8,15 @@
     "@deno/dnt": "jsr:@deno/dnt@^0.41.2",
     "@std/assert": "jsr:@std/assert@^0.226.0"
   },
+  "publish": {
+    "exclude": [
+      ".github",
+      "scripts",
+      "test"
+    ]
+  },
   "exports": "./mod.ts",
   "exclude": [
-    "npm",
-    "test/test_plugin_v4.wasm"
+    "npm"
   ]
 }
