@@ -1,5 +1,5 @@
 import type { FormatRequest, Formatter, GlobalConfiguration, Host, PluginInfo } from "./common.ts";
-import { FileMatchingInfo } from "./mod.ts";
+import type { FileMatchingInfo } from "./mod.ts";
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -8,6 +8,22 @@ const encoder = new TextEncoder();
  * Creates host for host formatting.
  */
 export function createHost(): Host {
+  function writeStderr(buf: Uint8Array) {
+    try {
+      // deno-lint-ignore no-explicit-any
+      const global = globalThis as any;
+      if (global.Deno) {
+        global.Deno.stderr.writeSync(buf);
+      } else if (global.process) {
+        global.process.stderr.writeSync(buf);
+      } else {
+        // ignore
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   let instance: WebAssembly.Instance;
   let hostFormatter: ((request: FormatRequest) => string) | undefined = undefined;
   let formattedText = "";
@@ -43,10 +59,9 @@ export function createHost(): Host {
 
               const buf = new Uint8Array(wasmMemoryBuffer, iovecBufPtr, iovecBufLen);
 
-              if (fd === 1) {
-                Deno.stdout.writeSync(buf);
-              } else if (fd === 2) {
-                Deno.stderr.writeSync(buf);
+              if (fd === 1 || fd === 2) {
+                // just write both stdout and stderr to stderr
+                writeStderr(buf);
               } else {
                 return 1; // not supported fd
               }
