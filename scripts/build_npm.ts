@@ -1,9 +1,10 @@
-import { build } from "https://deno.land/x/dnt@0.39.0/mod.ts";
+import { build } from "@deno/dnt";
 
 await build({
   entryPoints: ["mod.ts"],
   test: true,
   outDir: "./npm",
+  importMap: "./deno.json",
   shims: {
     deno: {
       test: "dev",
