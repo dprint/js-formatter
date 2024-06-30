@@ -83,6 +83,6 @@ export interface PluginInfo {
 
 /** Information about how the current config matches files. */
 export interface FileMatchingInfo {
-  fileExtensions: string[] | undefined;
+  fileExtensions: string[];
   fileNames: string[];
 }
