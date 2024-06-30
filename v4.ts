@@ -1,4 +1,5 @@
 import type { FormatRequest, Formatter, GlobalConfiguration, Host, PluginInfo } from "./common.ts";
+import { FileMatchingInfo } from "./mod.ts";
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -22,16 +23,44 @@ export function createHost(): Host {
     createImportObject(): WebAssembly.Imports {
       let sharedBuffer = new Uint8Array(0);
 
-      const resetSharedBuffer = (length: number) => {
-        sharedBuffer = new Uint8Array(length);
-      };
-
       return {
+        env: {
+          "fd_write": (
+            fd: number,
+            iovsPtr: number,
+            iovsLen: number,
+            nwrittenPtr: number,
+          ) => {
+            let totalWritten = 0;
+            // deno-lint-ignore no-explicit-any
+            const wasmMemoryBuffer = (instance.exports.memory as any).buffer;
+            const dataView = new DataView(wasmMemoryBuffer);
+
+            for (let i = 0; i < iovsLen; i++) {
+              const iovsOffset = iovsPtr + i * 8;
+              const iovecBufPtr = dataView.getUint32(iovsOffset, true);
+              const iovecBufLen = dataView.getUint32(iovsOffset + 4, true);
+
+              const buf = new Uint8Array(wasmMemoryBuffer, iovecBufPtr, iovecBufLen);
+
+              if (fd === 1) {
+                Deno.stdout.writeSync(buf);
+              } else if (fd === 2) {
+                Deno.stderr.writeSync(buf);
+              } else {
+                return 1; // not supported fd
+              }
+
+              totalWritten += iovecBufLen;
+            }
+
+            dataView.setUint32(nwrittenPtr, totalWritten, true);
+
+            return 0; // success
+          },
+        },
         dprint: {
           "host_has_cancelled": () => 0,
-          "host_clear_bytes": (length: number) => {
-            resetSharedBuffer(length);
-          },
           "host_write_buffer": (pointer: number) => {
             getWasmBufferAtPointer(instance, pointer, sharedBuffer.length).set(sharedBuffer);
           },
@@ -104,6 +133,7 @@ export function createFromInstance(
     format_range,
     get_error_text,
     get_plugin_info,
+    get_config_file_matching,
     get_resolved_config,
     get_config_diagnostics,
     get_license_text,
@@ -127,11 +157,13 @@ export function createFromInstance(
       const length = get_resolved_config(configId);
       return JSON.parse(receiveString(length));
     },
+    getFileMatchingInfo() {
+      const length = get_config_file_matching(configId);
+      return JSON.parse(receiveString(length)) as FileMatchingInfo;
+    },
     getPluginInfo() {
       const length = get_plugin_info();
-      const pluginInfo = JSON.parse(receiveString(length)) as PluginInfo;
-      pluginInfo.fileNames = pluginInfo.fileNames ?? [];
-      return pluginInfo;
+      return JSON.parse(receiveString(length)) as PluginInfo;
     },
     getLicenseText() {
       const length = get_license_text();
@@ -155,8 +187,8 @@ export function createFromInstance(
 
       sendString(request.fileText);
       const responseCode = request.bytesRange != null
-        ? format_range(request.bytesRange[0], request.bytesRange[1])
-        : format();
+        ? format_range(configId, request.bytesRange[0], request.bytesRange[1])
+        : format(configId);
       switch (responseCode) {
         case 0: // no change
           return request.fileText;

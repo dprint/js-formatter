@@ -40,6 +40,10 @@ export interface Formatter {
    */
   getPluginInfo(): PluginInfo;
   /**
+   * Gets what files the plugin matches based on the current configuration.
+   */
+  getFileMatchingInfo(): FileMatchingInfo;
+  /**
    * Gets the license text of the plugin.
    */
   getLicenseText(): string;
@@ -72,8 +76,13 @@ export interface PluginInfo {
   name: string;
   version: string;
   configKey: string;
-  fileExtensions: string[];
-  fileNames: string[];
   helpUrl: string;
   configSchemaUrl: string;
+  updateUrl?: string;
+}
+
+/** Information about how the current config matches files. */
+export interface FileMatchingInfo {
+  fileExtensions: string[] | undefined;
+  fileNames: string[];
 }

@@ -4,6 +4,7 @@ import * as v4 from "./v4.ts";
 
 export type {
   ConfigurationDiagnostic,
+  FileMatchingInfo,
   FormatRequest,
   Formatter,
   GlobalConfiguration,

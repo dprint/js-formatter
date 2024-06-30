@@ -134,12 +134,25 @@ export function createFromInstance(
       const length = get_resolved_config();
       return JSON.parse(receiveString(wasmInstance, length));
     },
+    getFileMatchingInfo() {
+      const length = get_plugin_info();
+      const pluginInfo = JSON.parse(receiveString(wasmInstance, length)) as PluginInfo;
+      return {
+        // deno-lint-ignore no-explicit-any
+        fileExtensions: (pluginInfo as any).fileExtensions ?? [],
+        // deno-lint-ignore no-explicit-any
+        fileNames: (pluginInfo as any).fileNames ?? [],
+      };
+    },
     getPluginInfo() {
       const length = get_plugin_info();
       const pluginInfo = JSON.parse(
         receiveString(wasmInstance, length),
       ) as PluginInfo;
-      pluginInfo.fileNames = pluginInfo.fileNames ?? [];
+      // deno-lint-ignore no-explicit-any
+      delete (pluginInfo as any).fileNames;
+      // deno-lint-ignore no-explicit-any
+      delete (pluginInfo as any).fileExtensions;
       return pluginInfo;
     },
     getLicenseText() {
