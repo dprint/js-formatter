@@ -23,9 +23,9 @@ Deno.test("it should support host format", async () => {
   const markdownFormatter = await createStreaming(
     fetch("https://plugins.dprint.dev/markdown-0.16.3.wasm"),
   );
-  const formatted = markdownFormatter.formatText(
-    "file.md",
-    `# heading1
+  const formatted = markdownFormatter.formatText({
+    filePath: "file.md",
+    fileText: `# heading1
 \`\`\`json
 {"a":[1,2,3]}
 \`\`\`
@@ -34,13 +34,11 @@ Deno.test("it should support host format", async () => {
 console . log ( value )
 \`\`\`
 `,
-    undefined,
-    (filePath, fileText) => {
-      return filePath.endsWith(".json")
-        ? jsonFormatter.formatText(filePath, fileText)
-        : fileText;
-    },
-  );
+  }, (request) => {
+    return request.filePath.endsWith(".json")
+      ? jsonFormatter.formatText(request)
+      : request.fileText;
+  });
   assertEquals(
     formatted,
     `# heading1
@@ -86,12 +84,19 @@ function runGeneralJsonFormatterTests(formatter: Formatter) {
     useTabs: false,
   });
   assertEquals(
-    formatter.formatText("file.json", "{\ntest: [ \n1, \n2] }"),
+    formatter.formatText({
+      filePath: "file.json",
+      fileText: "{\ntest: [ \n1, \n2] }",
+    }),
     `{ "test": [1, 2] }\n`,
   );
   assertEquals(
-    formatter.formatText("file.json", "{\ntest: [ \n1, \n2] }", {
-      "object.preferSingleLine": false,
+    formatter.formatText({
+      filePath: "file.json",
+      fileText: "{\ntest: [ \n1, \n2] }",
+      overrideConfig: {
+        "object.preferSingleLine": false,
+      },
     }),
     `{\n    "test": [1, 2]\n}\n`,
   );
