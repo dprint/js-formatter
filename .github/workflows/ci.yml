@@ -3,13 +3,18 @@ on: [push, pull_request]
 jobs:
   CI:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
       - name: Test
-        run: deno test --allow-net
+        run: deno test --allow-net --allow-read=.
+      - name: Publish on tag
+        run: deno run -A jsr:@david/publish-on-tag@0.1.4
       - name: Get tag version
         if: startsWith(github.ref, 'refs/tags/')
         id: get_tag_version

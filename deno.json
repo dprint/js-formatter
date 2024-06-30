@@ -1,7 +1,21 @@
 {
+  "name": "@dprint/formatter",
+  "version": "0.0.0",
   "tasks": {
     "build:npm": "deno run -A ./scripts/build_npm.ts"
   },
+  "imports": {
+    "@deno/dnt": "jsr:@deno/dnt@^0.41.2",
+    "@std/assert": "jsr:@std/assert@^0.226.0"
+  },
+  "publish": {
+    "exclude": [
+      ".github",
+      "scripts",
+      "test"
+    ]
+  },
+  "exports": "./mod.ts",
   "exclude": [
     "npm"
   ]

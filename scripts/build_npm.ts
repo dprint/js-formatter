@@ -1,9 +1,17 @@
-import { build } from "https://deno.land/x/dnt@0.39.0/mod.ts";
+import { build, emptyDir } from "@deno/dnt";
+
+const wasmFileLocations = [
+  "npm/script/test",
+  "npm/esm/test",
+];
+
+await emptyDir("npm");
 
 await build({
   entryPoints: ["mod.ts"],
   test: true,
   outDir: "./npm",
+  importMap: "./deno.json",
   shims: {
     deno: {
       test: "dev",
@@ -18,6 +26,12 @@ await build({
   },
   compilerOptions: {
     lib: ["ES2021", "DOM"],
+  },
+  postBuild: () => {
+    for (const location of wasmFileLocations) {
+      Deno.mkdirSync(location, { recursive: true });
+      Deno.copyFileSync("test/test_plugin_v4.wasm", location + "/test_plugin_v4.wasm");
+    }
   },
   package: {
     name: "@dprint/formatter",
@@ -43,3 +57,7 @@ await build({
 
 Deno.copyFileSync("LICENSE", "npm/LICENSE");
 Deno.copyFileSync("README.md", "npm/README.md");
+
+for (const location of wasmFileLocations) {
+  Deno.removeSync(location + "/test_plugin_v4.wasm");
+}
