@@ -1,4 +1,4 @@
-import { assert, assertEquals } from "@std/assert";
+import { assertEquals } from "@std/assert";
 import { createFromBuffer, createStreaming, type Formatter, type GlobalConfiguration } from "./mod.ts";
 
 Deno.test("it should create streaming", async () => {
