@@ -39,7 +39,10 @@ tsFormatter.setConfig(globalConfig, {
 });
 
 // outputs: "const t = 5\n"
-console.log(tsFormatter.formatText("file.ts", "const   t    = 5;"));
+console.log(tsFormatter.formatText({
+  filePath: "file.ts",
+  fileText: "const   t    = 5;",
+}));
 ```
 
 Using with plugins on npm (ex. [@dprint/json](https://www.npmjs.com/package/@dprint/json)):
@@ -54,7 +57,10 @@ import * as fs from "node:fs";
 const buffer = fs.readFileSync(getPath());
 const formatter = createFromBuffer(buffer);
 
-console.log(formatter.formatText("test.json", "{test: 5}"));
+console.log(formatter.formatText({
+  filePath: "test.json",
+  fileText: "{test: 5}",
+}));
 ```
 
 ### Plugin NPM Packages
