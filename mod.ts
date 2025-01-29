@@ -106,7 +106,12 @@ function getModuleVersion(module: WebAssembly.Module) {
     return undefined;
   }
 
-  const exports = WebAssembly.Module.exports(module);
+  // Deno wasm imports are typed as WebAssembly.Module, but imported as plain JS module
+  const exports = module instanceof WebAssembly.Module
+    ? WebAssembly.Module.exports(module)
+    // deno-lint-ignore no-explicit-any
+    : Object.keys(module as any).map((name) => ({ name }));
+
   for (const e of exports) {
     const maybeVersion = getVersionFromExport(e.name);
     if (maybeVersion != null) {
