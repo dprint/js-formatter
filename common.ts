@@ -11,7 +11,9 @@ export interface FormatRequest {
 
 export interface Host {
   setInstance(wasmInstance: WebAssembly.Instance): void;
-  setHostFormatter(formatWithHost: ((request: FormatRequest) => string) | undefined): void;
+  setHostFormatter(
+    formatWithHost: ((request: FormatRequest) => string) | undefined,
+  ): void;
   createImportObject(): WebAssembly.Imports;
 }
 
@@ -54,7 +56,10 @@ export interface Formatter {
    * @returns The formatted text.
    * @throws If there is an error formatting.
    */
-  formatText(request: FormatRequest, formatWithHost?: (request: FormatRequest) => string): string;
+  formatText(
+    request: FormatRequest,
+    formatWithHost?: (request: FormatRequest) => string,
+  ): string;
 }
 
 /** Configuration specified for use across plugins. */

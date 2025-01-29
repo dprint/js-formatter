@@ -1,4 +1,10 @@
-import type { FormatRequest, Formatter, GlobalConfiguration, Host, PluginInfo } from "./common.ts";
+import type {
+  FormatRequest,
+  Formatter,
+  GlobalConfiguration,
+  Host,
+  PluginInfo,
+} from "./common.ts";
 import type { FileMatchingInfo } from "./mod.ts";
 
 const decoder = new TextDecoder();
@@ -25,7 +31,8 @@ export function createHost(): Host {
   }
 
   let instance: WebAssembly.Instance;
-  let hostFormatter: ((request: FormatRequest) => string) | undefined = undefined;
+  let hostFormatter: ((request: FormatRequest) => string) | undefined =
+    undefined;
   let formattedText = "";
   let errorText = "";
 
@@ -57,7 +64,11 @@ export function createHost(): Host {
               const iovecBufPtr = dataView.getUint32(iovsOffset, true);
               const iovecBufLen = dataView.getUint32(iovsOffset + 4, true);
 
-              const buf = new Uint8Array(wasmMemoryBuffer, iovecBufPtr, iovecBufLen);
+              const buf = new Uint8Array(
+                wasmMemoryBuffer,
+                iovecBufPtr,
+                iovecBufLen,
+              );
 
               if (fd === 1 || fd === 2) {
                 // just write both stdout and stderr to stderr
@@ -77,7 +88,9 @@ export function createHost(): Host {
         dprint: {
           "host_has_cancelled": () => 0,
           "host_write_buffer": (pointer: number) => {
-            getWasmBufferAtPointer(instance, pointer, sharedBuffer.length).set(sharedBuffer);
+            getWasmBufferAtPointer(instance, pointer, sharedBuffer.length).set(
+              sharedBuffer,
+            );
           },
           "host_format": (
             filePathPtr: number,
@@ -90,9 +103,14 @@ export function createHost(): Host {
             fileBytesLen: number,
           ) => {
             const filePath = receiveString(filePathPtr, filePathLen);
-            const overrideConfigRaw = receiveString(overrideConfigPtr, overrideConfigLen);
+            const overrideConfigRaw = receiveString(
+              overrideConfigPtr,
+              overrideConfigLen,
+            );
 
-            const overrideConfig = overrideConfigRaw === "" ? {} : JSON.parse(overrideConfigRaw);
+            const overrideConfig = overrideConfigRaw === ""
+              ? {}
+              : JSON.parse(overrideConfigRaw);
             const fileText = receiveString(fileBytesPtr, fileBytesLen);
             const bytesRange = rangeStart === 0 && rangeEnd === fileBytesLen
               ? undefined
@@ -248,7 +266,11 @@ export function createFromInstance(
   }
 }
 
-function getWasmBufferAtPointer(wasmInstance: WebAssembly.Instance, pointer: number, length: number) {
+function getWasmBufferAtPointer(
+  wasmInstance: WebAssembly.Instance,
+  pointer: number,
+  length: number,
+) {
   return new Uint8Array(
     // deno-lint-ignore no-explicit-any
     (wasmInstance.exports.memory as any).buffer,

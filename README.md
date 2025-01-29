@@ -45,7 +45,8 @@ console.log(tsFormatter.formatText({
 }));
 ```
 
-Using with plugins on npm (ex. [@dprint/json](https://www.npmjs.com/package/@dprint/json)):
+Using with plugins on npm (ex.
+[@dprint/json](https://www.npmjs.com/package/@dprint/json)):
 
 ```ts
 import { createFromBuffer } from "@dprint/formatter";

@@ -1,4 +1,10 @@
-import type { FormatRequest, Formatter, GlobalConfiguration, Host, PluginInfo } from "./common.ts";
+import type {
+  FormatRequest,
+  Formatter,
+  GlobalConfiguration,
+  Host,
+  PluginInfo,
+} from "./common.ts";
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -8,7 +14,8 @@ const encoder = new TextEncoder();
  */
 export function createHost(): Host {
   let instance: WebAssembly.Instance;
-  let hostFormatter: ((request: FormatRequest) => string) | undefined = undefined;
+  let hostFormatter: ((request: FormatRequest) => string) | undefined =
+    undefined;
 
   let overrideConfig = {};
   let filePath = "";
@@ -37,11 +44,20 @@ export function createHost(): Host {
             resetSharedBuffer(length);
           },
           "host_read_buffer": (pointer: number, length: number) => {
-            sharedBuffer.set(getWasmBufferAtPointer(instance, pointer, length), sharedBufferIndex);
+            sharedBuffer.set(
+              getWasmBufferAtPointer(instance, pointer, length),
+              sharedBufferIndex,
+            );
             sharedBufferIndex += length;
           },
-          "host_write_buffer": (pointer: number, index: number, length: number) => {
-            getWasmBufferAtPointer(instance, pointer, length).set(sharedBuffer.slice(index, index + length));
+          "host_write_buffer": (
+            pointer: number,
+            index: number,
+            length: number,
+          ) => {
+            getWasmBufferAtPointer(instance, pointer, length).set(
+              sharedBuffer.slice(index, index + length),
+            );
           },
           "host_take_file_path": () => {
             filePath = decoder.decode(sharedBuffer);
@@ -108,13 +124,13 @@ export function createFromInstance(
   const pluginSchemaVersion = get_plugin_schema_version();
   const expectedPluginSchemaVersion = 3;
   if (
-    pluginSchemaVersion !== 2
-    && pluginSchemaVersion !== expectedPluginSchemaVersion
+    pluginSchemaVersion !== 2 &&
+    pluginSchemaVersion !== expectedPluginSchemaVersion
   ) {
     throw new Error(
-      `Not compatible plugin. `
-        + `Expected schema ${expectedPluginSchemaVersion}, `
-        + `but plugin had ${pluginSchemaVersion}.`,
+      `Not compatible plugin. ` +
+        `Expected schema ${expectedPluginSchemaVersion}, ` +
+        `but plugin had ${pluginSchemaVersion}.`,
     );
   }
 
@@ -136,7 +152,9 @@ export function createFromInstance(
     },
     getFileMatchingInfo() {
       const length = get_plugin_info();
-      const pluginInfo = JSON.parse(receiveString(wasmInstance, length)) as PluginInfo;
+      const pluginInfo = JSON.parse(
+        receiveString(wasmInstance, length),
+      ) as PluginInfo;
       return {
         // deno-lint-ignore no-explicit-any
         fileExtensions: (pluginInfo as any).fileExtensions ?? [],
@@ -229,7 +247,11 @@ function sendString(wasmInstance: WebAssembly.Instance, text: string) {
   let index = 0;
   while (index < length) {
     const writeCount = Math.min(length - index, memoryBufferSize);
-    const wasmBuffer = getWasmBufferAtPointer(wasmInstance, memoryBufferPointer, writeCount);
+    const wasmBuffer = getWasmBufferAtPointer(
+      wasmInstance,
+      memoryBufferPointer,
+      writeCount,
+    );
     wasmBuffer.set(encodedText.slice(index, index + writeCount));
     exports.add_to_shared_bytes_from_buffer(writeCount);
     index += writeCount;
@@ -249,19 +271,29 @@ function receiveString(wasmInstance: WebAssembly.Instance, length: number) {
   while (index < length) {
     const readCount = Math.min(length - index, memoryBufferSize);
     exports.set_buffer_with_shared_bytes(index, readCount);
-    const wasmBuffer = getWasmBufferAtPointer(wasmInstance, memoryBufferPointer, readCount);
+    const wasmBuffer = getWasmBufferAtPointer(
+      wasmInstance,
+      memoryBufferPointer,
+      readCount,
+    );
     buffer.set(wasmBuffer, index);
     index += readCount;
   }
   return decoder.decode(buffer);
 }
 
-function getWasmMemoryBufferPointer(wasmInstance: WebAssembly.Instance): number {
+function getWasmMemoryBufferPointer(
+  wasmInstance: WebAssembly.Instance,
+): number {
   // deno-lint-ignore no-explicit-any
   return (wasmInstance.exports as any).get_wasm_memory_buffer();
 }
 
-function getWasmBufferAtPointer(wasmInstance: WebAssembly.Instance, pointer: number, length: number) {
+function getWasmBufferAtPointer(
+  wasmInstance: WebAssembly.Instance,
+  pointer: number,
+  length: number,
+) {
   return new Uint8Array(
     // deno-lint-ignore no-explicit-any
     (wasmInstance.exports.memory as any).buffer,

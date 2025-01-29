@@ -36,8 +36,8 @@ export async function createStreaming(
     );
   }
   if (
-    typeof WebAssembly.instantiateStreaming === "function"
-    && response.headers.get("content-type") === "application/wasm"
+    typeof WebAssembly.instantiateStreaming === "function" &&
+    response.headers.get("content-type") === "application/wasm"
   ) {
     // deno-lint-ignore no-explicit-any
     const module = await WebAssembly.compileStreaming(response as any);
@@ -58,7 +58,9 @@ export function createFromBuffer(wasmModuleBuffer: BufferSource): Formatter {
   return createFromWasmModule(wasmModule);
 }
 
-export function createFromWasmModule(wasmModule: WebAssembly.Module): Formatter {
+export function createFromWasmModule(
+  wasmModule: WebAssembly.Module,
+): Formatter {
   const version = getModuleVersionOrThrow(wasmModule);
   if (version === 3) {
     const host = v3.createHost();
@@ -81,13 +83,19 @@ export function createFromWasmModule(wasmModule: WebAssembly.Module): Formatter 
 function getModuleVersionOrThrow(module: WebAssembly.Module): 3 | 4 {
   const version = getModuleVersion(module);
   if (version == null) {
-    throw new Error("Couldn't determine dprint plugin version. Maybe the js-formatter version is too old?");
+    throw new Error(
+      "Couldn't determine dprint plugin version. Maybe the js-formatter version is too old?",
+    );
   } else if (version === 3 || version === 4) {
     return version;
   } else if (version > 4) {
-    throw new Error(`Unsupported new dprint plugin version '${version}'. Maybe the js-formatter version is too old?`);
+    throw new Error(
+      `Unsupported new dprint plugin version '${version}'. Maybe the js-formatter version is too old?`,
+    );
   } else {
-    throw new Error(`Unsupported old dprint plugin version '${version}'. Please upgrade the plugin.`);
+    throw new Error(
+      `Unsupported old dprint plugin version '${version}'. Please upgrade the plugin.`,
+    );
   }
 }
 

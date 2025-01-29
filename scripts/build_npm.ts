@@ -30,7 +30,10 @@ await build({
   postBuild: () => {
     for (const location of wasmFileLocations) {
       Deno.mkdirSync(location, { recursive: true });
-      Deno.copyFileSync("test/test_plugin_v4.wasm", location + "/test_plugin_v4.wasm");
+      Deno.copyFileSync(
+        "test/test_plugin_v4.wasm",
+        location + "/test_plugin_v4.wasm",
+      );
     }
   },
   package: {

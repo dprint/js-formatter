@@ -1,6 +1,11 @@
 import { assertEquals } from "@std/assert";
 import * as fs from "node:fs";
-import { createFromBuffer, createStreaming, type Formatter, type GlobalConfiguration } from "./mod.ts";
+import {
+  createFromBuffer,
+  createStreaming,
+  type Formatter,
+  type GlobalConfiguration,
+} from "./mod.ts";
 
 Deno.test("it should create streaming", async () => {
   const formatter = await createStreaming(
@@ -157,7 +162,10 @@ Deno.test("should support v4", () => {
   });
 
   // some special config in this plugin
-  formatter.setConfig({}, { "file_extensions": ["asdf"], "file_names": ["some_name"] });
+  formatter.setConfig({}, {
+    "file_extensions": ["asdf"],
+    "file_names": ["some_name"],
+  });
   assertEquals(formatter.getFileMatchingInfo(), {
     fileExtensions: ["asdf"],
     fileNames: ["some_name"],
