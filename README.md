@@ -22,8 +22,37 @@ npm i @dprint/formatter
 
 ## Use
 
+Using [Deno wasm imports](https://docs.deno.com/runtime/reference/wasm/):
+
+```ts
+import * as mod from "https://plugins.dprint.dev/typescript-0.57.0.wasm";
+import { createFromWasmModule, GlobalConfiguration } from "@dprint/formatter";
+import { assertEquals } from "@std/assert";
+
+const globalConfig: GlobalConfiguration = {
+  indentWidth: 2,
+  lineWidth: 80,
+};
+const tsFormatter = await createFromWasmModule(mod);
+
+tsFormatter.setConfig(globalConfig, {
+  semiColons: "asi",
+});
+
+assertEquals(
+  "const t = 5\n",
+  tsFormatter.formatText({
+    filePath: "file.ts",
+    fileText: "const   t    = 5;",
+  }),
+);
+```
+
+Streaming from remote URL:
+
 ```ts
 import { createStreaming, GlobalConfiguration } from "@dprint/formatter";
+import { assertEquals } from "@std/assert";
 
 const globalConfig: GlobalConfiguration = {
   indentWidth: 2,
@@ -38,16 +67,18 @@ tsFormatter.setConfig(globalConfig, {
   semiColons: "asi",
 });
 
-// outputs: "const t = 5\n"
-console.log(tsFormatter.formatText({
-  filePath: "file.ts",
-  fileText: "const   t    = 5;",
-}));
+assertEquals(
+  "const t = 5\n",
+  tsFormatter.formatText({
+    filePath: "file.ts",
+    fileText: "const   t    = 5;",
+  }),
+);
 ```
 
 Using with plugins on npm (ex. [@dprint/json](https://www.npmjs.com/package/@dprint/json)):
 
-```ts
+```ts ignore
 import { createFromBuffer } from "@dprint/formatter";
 // You may have to use `getBuffer` on plugins that haven't updated yet.
 // See the plugins README.md for details.
