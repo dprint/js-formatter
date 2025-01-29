@@ -58,7 +58,37 @@ export function createFromBuffer(wasmModuleBuffer: BufferSource): Formatter {
   return createFromWasmModule(wasmModule);
 }
 
-export function createFromWasmModule(wasmModule: WebAssembly.Module): Formatter {
+/**
+ * Creates a formatter from the specified wasm module.
+ * @param wasmModule - Wasm module instance or Deno wasm imports.
+ *
+ * ```ts
+ * import * as mod from "https://plugins.dprint.dev/typescript-0.57.0.wasm";
+ * import { createFromWasmModule, GlobalConfiguration } from "@dprint/formatter";
+ * import { assertEquals } from "@std/assert";
+ *
+ * const globalConfig: GlobalConfiguration = {
+ *   indentWidth: 2,
+ *   lineWidth: 80,
+ * };
+ * const tsFormatter = await createFromWasmModule(mod);
+ *
+ * tsFormatter.setConfig(globalConfig, {
+ *   semiColons: "asi",
+ * });
+ *
+ * assertEquals(
+ *   "const t = 5\n",
+ *   tsFormatter.formatText({
+ *     filePath: "file.ts",
+ *     fileText: "const   t    = 5;",
+ *   }),
+ * );
+ * ```
+ */
+export function createFromWasmModule(
+  wasmModule: WebAssembly.Module,
+): Formatter {
   const version = getModuleVersionOrThrow(wasmModule);
   const v = version === 3 ? v3 : v4;
   const host = v.createHost();
