@@ -1,6 +1,12 @@
 import { assertEquals } from "@std/assert";
 import * as fs from "node:fs";
-import { createFromBuffer, createStreaming, type Formatter, type GlobalConfiguration } from "./mod.ts";
+import {
+  createFromBuffer,
+  createFromWasmModule,
+  createStreaming,
+  type Formatter,
+  type GlobalConfiguration,
+} from "./mod.ts";
 
 Deno.test("it should create streaming", async () => {
   const formatter = await createStreaming(
@@ -13,6 +19,13 @@ Deno.test("it should create from buffer", async () => {
   const buffer = await fetch("https://plugins.dprint.dev/json-0.13.0.wasm")
     .then((r) => r.arrayBuffer());
   const formatter = createFromBuffer(buffer);
+  runGeneralJsonFormatterTests(formatter);
+});
+
+Deno.test("it should create from Deno wasm instance", async () => {
+  const mod = await import("https://plugins.dprint.dev/json-0.13.0.wasm");
+
+  const formatter = createFromWasmModule(mod);
   runGeneralJsonFormatterTests(formatter);
 });
 

@@ -60,22 +60,16 @@ export function createFromBuffer(wasmModuleBuffer: BufferSource): Formatter {
 
 export function createFromWasmModule(wasmModule: WebAssembly.Module): Formatter {
   const version = getModuleVersionOrThrow(wasmModule);
-  if (version === 3) {
-    const host = v3.createHost();
-    const wasmInstance = new WebAssembly.Instance(
-      wasmModule,
-      host.createImportObject(),
-    );
-    return v3.createFromInstance(wasmInstance, host);
-  } else {
-    const _assert4: 4 = version;
-    const host = v4.createHost();
-    const wasmInstance = new WebAssembly.Instance(
-      wasmModule,
-      host.createImportObject(),
-    );
-    return v4.createFromInstance(wasmInstance, host);
-  }
+  const v = version === 3 ? v3 : v4;
+  const host = v.createHost();
+
+  // Deno wasm imports are typed as WebAssembly.Module, but imported as plain JS module
+  const wasmInstance: WebAssembly.Instance =
+    wasmModule instanceof WebAssembly.Module
+      ? new WebAssembly.Instance(wasmModule, host.createImportObject())
+      : { exports: wasmModule };
+
+  return v.createFromInstance(wasmInstance, host);
 }
 
 function getModuleVersionOrThrow(module: WebAssembly.Module): 3 | 4 {
