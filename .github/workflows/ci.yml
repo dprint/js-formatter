@@ -21,8 +21,8 @@ jobs:
         run: echo ::set-output name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
       - name: npm build
         run: deno task build:npm ${{steps.get_tag_version.outputs.TAG_VERSION}}
       - name: npm publish

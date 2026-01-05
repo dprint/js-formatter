@@ -23,7 +23,7 @@ export function createHost(): Host {
       hostFormatter = formatWithHost;
     },
     createImportObject(): WebAssembly.Imports {
-      let sharedBuffer = new Uint8Array(0);
+      let sharedBuffer: Uint8Array<ArrayBufferLike> = new Uint8Array(0);
       let sharedBufferIndex = 0;
 
       const resetSharedBuffer = (length: number) => {

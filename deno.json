@@ -5,8 +5,8 @@
     "build:npm": "deno run -A ./scripts/build_npm.ts"
   },
   "imports": {
-    "@deno/dnt": "jsr:@deno/dnt@^0.41.2",
-    "@std/assert": "jsr:@std/assert@^0.226.0"
+    "@deno/dnt": "jsr:@deno/dnt@^0.42.3",
+    "@std/assert": "jsr:@std/assert@1"
   },
   "publish": {
     "exclude": [

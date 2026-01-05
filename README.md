@@ -49,13 +49,10 @@ Using with plugins on npm (ex. [@dprint/json](https://www.npmjs.com/package/@dpr
 
 ```ts
 import { createFromBuffer } from "@dprint/formatter";
-// You may have to use `getBuffer` on plugins that haven't updated yet.
-// See the plugins README.md for details.
-import { getPath } from "@dprint/json";
+import { getBuffer } from "@dprint/json";
 import * as fs from "node:fs";
 
-const buffer = fs.readFileSync(getPath());
-const formatter = createFromBuffer(buffer);
+const formatter = createFromBuffer(getBuffer());
 
 console.log(formatter.formatText({
   filePath: "test.json",
