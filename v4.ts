@@ -8,7 +8,7 @@ const encoder = new TextEncoder();
  * Creates host for host formatting.
  */
 export function createHost(): Host {
-  function writeStderr(buf: Uint8Array) {
+  function writeStderr(buf: Uint8Array<ArrayBuffer>) {
     try {
       // deno-lint-ignore no-explicit-any
       const global = globalThis as any;
@@ -37,7 +37,7 @@ export function createHost(): Host {
       hostFormatter = formatWithHost;
     },
     createImportObject(): WebAssembly.Imports {
-      let sharedBuffer = new Uint8Array(0);
+      let sharedBuffer: Uint8Array<ArrayBufferLike> = new Uint8Array(0);
 
       return {
         env: {

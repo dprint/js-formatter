@@ -108,7 +108,7 @@ function runGeneralJsonFormatterTests(formatter: Formatter) {
 Deno.test("should support v4", () => {
   // this plugin file's code is here: https://github.com/dprint/dprint/blob/main/crates/test-plugin/src/lib.rs
   const formatter = createFromBuffer(
-    fs.readFileSync(new URL("./test/test_plugin_v4.wasm", import.meta.url)),
+    new Uint8Array(fs.readFileSync(new URL("./test/test_plugin_v4.wasm", import.meta.url))),
   );
 
   formatter.setConfig({}, { "ending": "formatted_wasm" });

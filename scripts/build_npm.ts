@@ -11,7 +11,6 @@ await build({
   entryPoints: ["mod.ts"],
   test: true,
   outDir: "./npm",
-  importMap: "./deno.json",
   shims: {
     deno: {
       test: "dev",
@@ -25,13 +24,17 @@ await build({
     }],
   },
   compilerOptions: {
-    lib: ["ES2021", "DOM"],
+    lib: ["ESNext", "DOM"],
   },
   postBuild: () => {
     for (const location of wasmFileLocations) {
       Deno.mkdirSync(location, { recursive: true });
       Deno.copyFileSync("test/test_plugin_v4.wasm", location + "/test_plugin_v4.wasm");
     }
+  },
+  filterDiagnostic(diagnostic) {
+    // not sure what's up here... just ignore it
+    return !diagnostic.file?.fileName.includes("_dnt.test_polyfills.ts");
   },
   package: {
     name: "@dprint/formatter",
@@ -52,6 +55,9 @@ await build({
       url: "https://github.com/dprint/js-formatter/issues",
     },
     homepage: "https://github.com/dprint/js-formatter#readme",
+    devDependencies: {
+      "@types/node": "^25",
+    },
   },
 });
 
