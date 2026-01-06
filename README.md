@@ -27,6 +27,7 @@ The context API allows you to manage multiple plugins with shared configuration 
 ```ts
 import { createContext } from "@dprint/formatter";
 import * as json from "@dprint/json";
+import * as markdown from "@dprint/markdown";
 import * as typescript from "@dprint/typescript";
 import fs from "node:fs";
 
@@ -35,11 +36,13 @@ const context = createContext({
   indentWidth: 2,
   lineWidth: 80,
 });
+
 // note: some plugins might have a getBuffer() export instead
 context.addPlugin(fs.readFileSync(typescript.getPath()), {
   semiColons: "asi",
 });
 context.addPlugin(fs.readFileSync(json.getPath()));
+context.addPlugin(fs.readFileSync(markdown.getPath()));
 
 console.log(context.formatText({
   filePath: "config.json",
