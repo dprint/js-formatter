@@ -11,7 +11,7 @@ JS formatter for dprint Wasm plugins.
 Deno:
 
 ```sh
-deno add @dprint/formatter
+deno add npm:@dprint/formatter
 ```
 
 Node.js:
@@ -20,45 +20,39 @@ Node.js:
 npm i @dprint/formatter
 ```
 
-## Use
+### Use
+
+The context API allows you to manage multiple plugins with shared configuration and automatic plugin selection based on file type:
 
 ```ts
-import { createStreaming, GlobalConfiguration } from "@dprint/formatter";
+import { createContext } from "@dprint/formatter";
+import * as json from "@dprint/json";
+import * as typescript from "@dprint/typescript";
+import fs from "node:fs";
 
-const globalConfig: GlobalConfiguration = {
+const context = createContext({
+  // global config
   indentWidth: 2,
   lineWidth: 80,
-};
-const tsFormatter = await createStreaming(
-  // check https://plugins.dprint.dev/ for latest plugin versions
-  fetch("https://plugins.dprint.dev/typescript-0.57.0.wasm"),
-);
-
-tsFormatter.setConfig(globalConfig, {
+});
+// note: some plugins might have a getBuffer() export instead
+context.addPlugin(fs.readFileSync(typescript.getPath()), {
   semiColons: "asi",
 });
+context.addPlugin(fs.readFileSync(json.getPath()));
 
-// outputs: "const t = 5\n"
-console.log(tsFormatter.formatText({
-  filePath: "file.ts",
-  fileText: "const   t    = 5;",
+console.log(context.formatText({
+  filePath: "config.json",
+  fileText: "{\"a\":1}",
+}));
+
+console.log(context.formatText({
+  filePath: "app.ts",
+  fileText: "const x=1",
 }));
 ```
 
-Using with plugins on npm (ex. [@dprint/json](https://www.npmjs.com/package/@dprint/json)):
-
-```ts
-import { createFromBuffer } from "@dprint/formatter";
-import { getBuffer } from "@dprint/json";
-import * as fs from "node:fs";
-
-const formatter = createFromBuffer(getBuffer());
-
-console.log(formatter.formatText({
-  filePath: "test.json",
-  fileText: "{test: 5}",
-}));
-```
+The context also handles host formatting automatically, so embedded code blocks (like JSON in Markdown) will be formatted by the appropriate plugin.
 
 ### Plugin NPM Packages
 
@@ -70,4 +64,6 @@ Note: In the future I will ensure plugins are published to JSR as well.
 - [@dprint/toml](https://www.npmjs.com/package/@dprint/toml)
 - [@dprint/dockerfile](https://www.npmjs.com/package/@dprint/dockerfile)
 - [@dprint/biome](https://www.npmjs.com/package/@dprint/biome)
+- [@dprint/oxc](https://www.npmjs.com/package/@dprint/oxc)
+- [@dprint/mago](https://www.npmjs.com/package/@dprint/mago)
 - [@dprint/ruff](https://www.npmjs.com/package/@dprint/ruff)

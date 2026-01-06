@@ -10,7 +10,10 @@
     "jsr:@std/path@1": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
     "jsr:@ts-morph/bootstrap@0.27": "0.27.0",
-    "jsr:@ts-morph/common@0.27": "0.27.0"
+    "jsr:@ts-morph/common@0.27": "0.27.0",
+    "npm:@dprint/json@~0.21.1": "0.21.1",
+    "npm:@dprint/markdown@0.20": "0.20.0",
+    "npm:@dprint/typescript@~0.95.13": "0.95.13"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -65,10 +68,24 @@
       ]
     }
   },
+  "npm": {
+    "@dprint/json@0.21.1": {
+      "integrity": "sha512-iojh7UJbaCRF3Z83oB33QpWvEpB8YtZRlRNNkGeoGGNYWQQE7ngRWKKHtQ5wHQ9e19EkeS1VdYBl2wy5xvZJBA=="
+    },
+    "@dprint/markdown@0.20.0": {
+      "integrity": "sha512-qvynFdQZwul4Y+hoMP02QerEhM5VItb4cO8/qpQrSuQuYvDU+bIseiheVAetSpWlNPBU1JK8bQKloiCSp9lXnA=="
+    },
+    "@dprint/typescript@0.95.13": {
+      "integrity": "sha512-lzhaiENYcsLOo+qJHzwWbZ/Ne+67eDGLwhU52Z0AnW6gHeCN1EZ8DDe5gI/f/Fvk2Jd2wlnmoyrsrYnkg/SDgw=="
+    }
+  },
   "workspace": {
     "dependencies": [
       "jsr:@deno/dnt@~0.42.3",
-      "jsr:@std/assert@1"
+      "jsr:@std/assert@1",
+      "npm:@dprint/json@~0.21.1",
+      "npm:@dprint/markdown@0.20",
+      "npm:@dprint/typescript@~0.95.13"
     ]
   }
 }

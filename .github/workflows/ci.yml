@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: denoland/setup-deno@v2
       - name: Test
-        run: deno test --allow-net --allow-read=.
+        run: deno test -P
       - name: Publish on tag
         run: deno run -A jsr:@david/publish-on-tag@0.2.0
       - name: Get tag version
