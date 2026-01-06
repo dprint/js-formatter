@@ -184,13 +184,14 @@ export function createFromInstance(
       const length = get_license_text();
       return receiveString(length);
     },
-    formatText(request, formatWithHost) {
+    setHostFormatter(formatWithHost) {
+      host.setHostFormatter(formatWithHost);
+    },
+    formatText(request) {
       if (request.bytesRange != null && format_range == null) {
         // plugin doesn't support range formatting
         return request.fileText;
       }
-
-      host.setHostFormatter(formatWithHost);
 
       setConfigIfNotSet();
       if (request.overrideConfig != null) {

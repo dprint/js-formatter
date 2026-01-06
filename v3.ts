@@ -159,12 +159,14 @@ export function createFromInstance(
       const length = get_license_text();
       return receiveString(wasmInstance, length);
     },
-    formatText(request, formatWithHost) {
+    setHostFormatter(formatWithHost) {
+      host.setHostFormatter(formatWithHost);
+    },
+    formatText(request) {
       if (request.bytesRange != null) {
         // not supported for v3
         return request.fileText;
       }
-      host.setHostFormatter(formatWithHost);
 
       setConfigIfNotSet();
       if (request.overrideConfig != null) {

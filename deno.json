@@ -4,8 +4,16 @@
   "tasks": {
     "build:npm": "deno run -A ./scripts/build_npm.ts"
   },
+  "test": {
+    "permissions": {
+      "read": true
+    }
+  },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.42.3",
+    "@dprint/json": "npm:@dprint/json@^0.21.1",
+    "@dprint/markdown": "npm:@dprint/markdown@^0.20.0",
+    "@dprint/typescript": "npm:@dprint/typescript@^0.95.13",
     "@std/assert": "jsr:@std/assert@1"
   },
   "publish": {

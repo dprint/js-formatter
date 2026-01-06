@@ -48,13 +48,17 @@ export interface Formatter {
    */
   getLicenseText(): string;
   /**
+   * Sets the host formatter for formatting embedded code.
+   * @param formatWithHost - A function that formats embedded code blocks.
+   */
+  setHostFormatter(formatWithHost: ((request: FormatRequest) => string) | undefined): void;
+  /**
    * Formats the specified file text.
    * @param request - Data to format.
-   * @param formatWithHost - Host formatter.
    * @returns The formatted text.
    * @throws If there is an error formatting.
    */
-  formatText(request: FormatRequest, formatWithHost?: (request: FormatRequest) => string): string;
+  formatText(request: FormatRequest): string;
 }
 
 /** Configuration specified for use across plugins. */
