@@ -6,7 +6,7 @@
   },
   "test": {
     "permissions": {
-      "read": ["."]
+      "read": true
     }
   },
   "imports": {
