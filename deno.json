@@ -1,6 +1,5 @@
 {
   "name": "@dprint/formatter",
-  "version": "0.0.0",
   "tasks": {
     "build:npm": "deno run -A ./scripts/build_npm.ts"
   },
