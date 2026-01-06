@@ -20,7 +20,7 @@ Node.js:
 npm i @dprint/formatter
 ```
 
-### Use
+## Use
 
 The context API allows you to manage multiple plugins with shared configuration and automatic plugin selection based on file type:
 
