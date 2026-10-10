@@ -1,4 +1,4 @@
-import type { FormatRequest, Formatter, GlobalConfiguration, Host, PluginInfo } from "./common.ts";
+import type { FormatRequest, Formatter, FormatterOptions, GlobalConfiguration, Host, PluginInfo } from "./common.ts";
 import type { FileMatchingInfo } from "./mod.ts";
 import { addUnsupportedWasiImports, createWasiImports, WASI_MODULE_NAME } from "./wasi.ts";
 
@@ -8,23 +8,8 @@ const encoder = new TextEncoder();
 /**
  * Creates host for host formatting.
  */
-export function createHost(): Host {
-  function writeStderr(buf: Uint8Array) {
-    try {
-      // deno-lint-ignore no-explicit-any
-      const global = globalThis as any;
-      if (global.Deno) {
-        global.Deno.stderr.writeSync(buf);
-      } else if (global.process) {
-        global.process.stderr.writeSync(buf);
-      } else {
-        // ignore
-      }
-    } catch {
-      // ignore
-    }
-  }
-
+export function createHost(options: FormatterOptions = {}): Host {
+  const writeOutput = options.onOutput ?? writeStderr;
   let instance: WebAssembly.Instance;
   let hostFormatter: ((request: FormatRequest) => string) | undefined = undefined;
   let formattedText = "";
@@ -43,8 +28,8 @@ export function createHost(): Host {
         // the instance isn't set while the module is being instantiated
         getMemory: () =>
           (instance as WebAssembly.Instance | undefined)?.exports.memory as WebAssembly.Memory | undefined,
-        // just write both stdout and stderr to stderr
-        writeOutput: (text) => writeStderr(encoder.encode(text)),
+        // stdout and stderr are both written to the same place
+        writeOutput,
       });
       if (wasmModule != null) {
         addUnsupportedWasiImports(wasiImports, wasmModule);
@@ -228,6 +213,15 @@ export function createFromInstance(
   function receiveString(length: number) {
     const ptr = get_shared_bytes_ptr();
     return decoder.decode(getWasmBufferAtPointer(wasmInstance, ptr, length));
+  }
+}
+
+function writeStderr(text: string) {
+  try {
+    // deno-lint-ignore no-explicit-any
+    (globalThis as any).process?.stderr.write(text);
+  } catch {
+    // ignore
   }
 }
 

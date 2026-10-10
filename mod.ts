@@ -1,4 +1,10 @@
-import type { ConfigurationDiagnostic, FormatRequest, Formatter, GlobalConfiguration } from "./common.ts";
+import type {
+  ConfigurationDiagnostic,
+  FormatRequest,
+  Formatter,
+  FormatterOptions,
+  GlobalConfiguration,
+} from "./common.ts";
 import * as v3 from "./v3.ts";
 import * as v4 from "./v4.ts";
 
@@ -7,6 +13,7 @@ export type {
   FileMatchingInfo,
   FormatRequest,
   Formatter,
+  FormatterOptions,
   GlobalConfiguration,
   Host,
   PluginInfo,
@@ -71,8 +78,12 @@ export interface FormatterContext {
 /**
  * Creates a formatter context for managing multiple plugins with shared configuration.
  * @param globalConfig - Global configuration shared across all plugins.
+ * @param options - Options used when creating the formatter of each plugin.
  */
-export function createContext(globalConfig: GlobalConfiguration = {}): FormatterContext {
+export function createContext(
+  globalConfig: GlobalConfiguration = {},
+  options?: FormatterOptions,
+): FormatterContext {
   const plugins: RegisteredPlugin[] = [];
 
   function findPluginForFile(filePath: string): RegisteredPlugin | undefined {
@@ -121,8 +132,8 @@ export function createContext(globalConfig: GlobalConfiguration = {}): Formatter
       pluginConfig: Record<string, unknown> = {},
     ): ContextFormatter {
       const formatter = source instanceof WebAssembly.Module
-        ? createFromWasmModule(source)
-        : createFromBuffer(source);
+        ? createFromWasmModule(source, options)
+        : createFromBuffer(source, options);
 
       // Set configuration
       formatter.setConfig(globalConfig, pluginConfig);
@@ -214,12 +225,14 @@ export interface ResponseLike {
  * Creates a formatter from the specified streaming source.
  * @remarks This is the most efficient way to create a formatter.
  * @param response - The streaming source to create the formatter from.
+ * @param options - Options for creating the formatter.
  */
 export async function createStreaming(
   responsePromise: Promise<ResponseLike> | ResponseLike,
+  options?: FormatterOptions,
 ): Promise<Formatter> {
   const wasmModule = await createWasmModuleFromStreaming(responsePromise);
-  return createFromWasmModule(wasmModule);
+  return createFromWasmModule(wasmModule, options);
 }
 
 async function createWasmModuleFromStreaming(responsePromise: Promise<ResponseLike> | ResponseLike) {
@@ -245,13 +258,19 @@ async function createWasmModuleFromStreaming(responsePromise: Promise<ResponseLi
 /**
  * Creates a formatter from the specified wasm module bytes.
  * @param wasmModuleBuffer - The buffer of the wasm module.
+ * @param options - Options for creating the formatter.
  */
-export function createFromBuffer(wasmModuleBuffer: BufferSource): Formatter {
+export function createFromBuffer(wasmModuleBuffer: BufferSource, options?: FormatterOptions): Formatter {
   const wasmModule = new WebAssembly.Module(wasmModuleBuffer);
-  return createFromWasmModule(wasmModule);
+  return createFromWasmModule(wasmModule, options);
 }
 
-export function createFromWasmModule(wasmModule: WebAssembly.Module): Formatter {
+/**
+ * Creates a formatter from the specified wasm module.
+ * @param wasmModule - The compiled wasm module.
+ * @param options - Options for creating the formatter.
+ */
+export function createFromWasmModule(wasmModule: WebAssembly.Module, options?: FormatterOptions): Formatter {
   const version = getModuleVersionOrThrow(wasmModule);
   if (version === 3) {
     const host = v3.createHost();
@@ -262,7 +281,7 @@ export function createFromWasmModule(wasmModule: WebAssembly.Module): Formatter 
     return v3.createFromInstance(wasmInstance, host);
   } else {
     const _assert4: 4 = version;
-    const host = v4.createHost();
+    const host = v4.createHost(options);
     const wasmInstance = new WebAssembly.Instance(
       wasmModule,
       host.createImportObject(wasmModule),

@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertThrows } from "@std/assert";
 import * as fs from "node:fs";
-import { createFromBuffer } from "./mod.ts";
+import { createFromBuffer, type Host } from "./mod.ts";
 import * as v4 from "./v4.ts";
 import { addUnsupportedWasiImports, createWasiImports, WASI_MODULE_NAME } from "./wasi.ts";
 
@@ -30,6 +30,30 @@ Deno.test("wasi - should instantiate and initialize a plugin importing wasi func
 
   // ensure the public api can create it
   createFromBuffer(testWasm);
+});
+
+Deno.test("wasi - should provide the output of a plugin to the onOutput option", () => {
+  const output: string[] = [];
+  const exports = instantiateWithHost(v4.createHost({ onOutput: (text) => output.push(text) }));
+  writeHello(exports);
+  assertEquals(output, ["hello\n"]);
+});
+
+Deno.test("wasi - should write the output of a plugin to stderr by default", () => {
+  // deno-lint-ignore no-explicit-any
+  const stderr = (globalThis as any).process.stderr;
+  const originalWrite = stderr.write;
+  const output: unknown[] = [];
+  stderr.write = (text: unknown) => {
+    output.push(text);
+    return true;
+  };
+  try {
+    writeHello(instantiateWithHost(v4.createHost()));
+  } finally {
+    stderr.write = originalWrite;
+  }
+  assertEquals(output, ["hello\n"]);
 });
 
 Deno.test("wasi - should fail for a wasi command", () => {
@@ -348,6 +372,25 @@ Deno.test("wasi - should not define unsupported functions the module doesn't imp
   addUnsupportedWasiImports(imports, new WebAssembly.Module(testWasm));
   assertEquals(Object.keys(imports), [...names, "sock_send", "path_create_directory"]);
 });
+
+// deno-lint-ignore no-explicit-any
+function instantiateWithHost(host: Host): any {
+  const wasmModule = new WebAssembly.Module(testWasm);
+  const instance = new WebAssembly.Instance(wasmModule, host.createImportObject(wasmModule));
+  host.setInstance(instance);
+  return instance.exports;
+}
+
+/** Writes "hello" followed by a newline to stdout. */
+// deno-lint-ignore no-explicit-any
+function writeHello(exports: any) {
+  const bytes = new Uint8Array(exports.memory.buffer);
+  const view = new DataView(exports.memory.buffer);
+  bytes.set(new TextEncoder().encode("hello\n"), 100);
+  view.setUint32(0, 100, true);
+  view.setUint32(4, 6, true);
+  assertEquals(exports.fd_write(1, 0, 1, 16), 0);
+}
 
 /** An instance of the test module, which has a single page of memory. */
 class TestModule {
