@@ -13,7 +13,8 @@
     "@dprint/json": "npm:@dprint/json@^0.21.1",
     "@dprint/markdown": "npm:@dprint/markdown@^0.20.0",
     "@dprint/typescript": "npm:@dprint/typescript@^0.95.13",
-    "@std/assert": "jsr:@std/assert@1"
+    "@std/assert": "jsr:@std/assert@1",
+    "wabt": "npm:wabt@1.0.39"
   },
   "publish": {
     "exclude": [

@@ -265,7 +265,7 @@ export function createFromWasmModule(wasmModule: WebAssembly.Module): Formatter 
     const host = v4.createHost();
     const wasmInstance = new WebAssembly.Instance(
       wasmModule,
-      host.createImportObject(),
+      host.createImportObject(wasmModule),
     );
     return v4.createFromInstance(wasmInstance, host);
   }

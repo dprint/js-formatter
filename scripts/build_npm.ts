@@ -5,6 +5,8 @@ const wasmFileLocations = [
   "npm/esm/test",
 ];
 
+const wasmFileNames = ["test_plugin_v4.wasm", "test_wasi.wasm"];
+
 await emptyDir("npm");
 
 await build({
@@ -29,7 +31,9 @@ await build({
   postBuild: () => {
     for (const location of wasmFileLocations) {
       Deno.mkdirSync(location, { recursive: true });
-      Deno.copyFileSync("test/test_plugin_v4.wasm", location + "/test_plugin_v4.wasm");
+      for (const fileName of wasmFileNames) {
+        Deno.copyFileSync("test/" + fileName, location + "/" + fileName);
+      }
     }
   },
   filterDiagnostic(diagnostic) {
@@ -65,5 +69,7 @@ Deno.copyFileSync("LICENSE", "npm/LICENSE");
 Deno.copyFileSync("README.md", "npm/README.md");
 
 for (const location of wasmFileLocations) {
-  Deno.removeSync(location + "/test_plugin_v4.wasm");
+  for (const fileName of wasmFileNames) {
+    Deno.removeSync(location + "/" + fileName);
+  }
 }

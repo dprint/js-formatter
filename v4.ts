@@ -1,5 +1,6 @@
 import type { FormatRequest, Formatter, GlobalConfiguration, Host, PluginInfo } from "./common.ts";
 import type { FileMatchingInfo } from "./mod.ts";
+import { addUnsupportedWasiImports, createWasiImports, WASI_MODULE_NAME } from "./wasi.ts";
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -8,7 +9,7 @@ const encoder = new TextEncoder();
  * Creates host for host formatting.
  */
 export function createHost(): Host {
-  function writeStderr(buf: Uint8Array<ArrayBuffer>) {
+  function writeStderr(buf: Uint8Array) {
     try {
       // deno-lint-ignore no-explicit-any
       const global = globalThis as any;
@@ -36,44 +37,24 @@ export function createHost(): Host {
     setHostFormatter(formatWithHost) {
       hostFormatter = formatWithHost;
     },
-    createImportObject(): WebAssembly.Imports {
+    createImportObject(wasmModule?: WebAssembly.Module): WebAssembly.Imports {
       let sharedBuffer: Uint8Array<ArrayBufferLike> = new Uint8Array(0);
+      const wasiImports = createWasiImports({
+        // the instance isn't set while the module is being instantiated
+        getMemory: () =>
+          (instance as WebAssembly.Instance | undefined)?.exports.memory as WebAssembly.Memory | undefined,
+        // just write both stdout and stderr to stderr
+        writeOutput: (text) => writeStderr(encoder.encode(text)),
+      });
+      if (wasmModule != null) {
+        addUnsupportedWasiImports(wasiImports, wasmModule);
+      }
 
       return {
         env: {
-          "fd_write": (
-            fd: number,
-            iovsPtr: number,
-            iovsLen: number,
-            nwrittenPtr: number,
-          ) => {
-            let totalWritten = 0;
-            // deno-lint-ignore no-explicit-any
-            const wasmMemoryBuffer = (instance.exports.memory as any).buffer;
-            const dataView = new DataView(wasmMemoryBuffer);
-
-            for (let i = 0; i < iovsLen; i++) {
-              const iovsOffset = iovsPtr + i * 8;
-              const iovecBufPtr = dataView.getUint32(iovsOffset, true);
-              const iovecBufLen = dataView.getUint32(iovsOffset + 4, true);
-
-              const buf = new Uint8Array(wasmMemoryBuffer, iovecBufPtr, iovecBufLen);
-
-              if (fd === 1 || fd === 2) {
-                // just write both stdout and stderr to stderr
-                writeStderr(buf);
-              } else {
-                return 1; // not supported fd
-              }
-
-              totalWritten += iovecBufLen;
-            }
-
-            dataView.setUint32(nwrittenPtr, totalWritten, true);
-
-            return 0; // success
-          },
+          "fd_write": wasiImports.fd_write,
         },
+        [WASI_MODULE_NAME]: wasiImports,
         dprint: {
           "host_has_cancelled": () => 0,
           "host_write_buffer": (pointer: number) => {
@@ -138,6 +119,7 @@ export function createFromInstance(
   const configId = 1;
   // deno-lint-ignore no-explicit-any
   const wasmExports = wasmInstance.exports as any;
+  initializeWasiReactor(wasmExports);
   const {
     get_shared_bytes_ptr,
     set_file_path,
@@ -246,6 +228,23 @@ export function createFromInstance(
   function receiveString(length: number) {
     const ptr = get_shared_bytes_ptr();
     return decoder.decode(getWasmBufferAtPointer(wasmInstance, ptr, length));
+  }
+}
+
+/**
+ * Plugins linked against a WASI libc are "reactors", which need to be
+ * initialized before any of their other exports are called.
+ */
+// deno-lint-ignore no-explicit-any
+function initializeWasiReactor(wasmExports: any) {
+  if (typeof wasmExports._initialize === "function") {
+    wasmExports._initialize();
+  } else if (wasmExports._start != null) {
+    // a WASI "command" only initializes its libc when running its main function,
+    // which leaves nothing initialized for the plugin's other exports
+    throw new Error(
+      "The plugin was built as a WASI command (it exports _start), but it must be built as a WASI reactor (exporting _initialize).",
+    );
   }
 }
 

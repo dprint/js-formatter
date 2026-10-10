@@ -13,7 +13,8 @@
     "jsr:@ts-morph/common@0.27": "0.27.0",
     "npm:@dprint/json@~0.21.1": "0.21.1",
     "npm:@dprint/markdown@0.20": "0.20.0",
-    "npm:@dprint/typescript@~0.95.13": "0.95.13"
+    "npm:@dprint/typescript@~0.95.13": "0.95.13",
+    "npm:wabt@1.0.39": "1.0.39"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -77,6 +78,10 @@
     },
     "@dprint/typescript@0.95.13": {
       "integrity": "sha512-lzhaiENYcsLOo+qJHzwWbZ/Ne+67eDGLwhU52Z0AnW6gHeCN1EZ8DDe5gI/f/Fvk2Jd2wlnmoyrsrYnkg/SDgw=="
+    },
+    "wabt@1.0.39": {
+      "integrity": "sha512-ba+dRL/75VQQY7RkU/CgriGbkoWAfS8TDyUlJfJhJ8KhtXgMl5dhNvoPNUcQ9IWRhW8u41glMSuZeTvsYq2rRg==",
+      "bin": true
     }
   },
   "workspace": {
@@ -85,7 +90,8 @@
       "jsr:@std/assert@1",
       "npm:@dprint/json@~0.21.1",
       "npm:@dprint/markdown@0.20",
-      "npm:@dprint/typescript@~0.95.13"
+      "npm:@dprint/typescript@~0.95.13",
+      "npm:wabt@1.0.39"
     ]
   }
 }

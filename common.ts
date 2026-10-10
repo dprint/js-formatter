@@ -12,7 +12,11 @@ export interface FormatRequest {
 export interface Host {
   setInstance(wasmInstance: WebAssembly.Instance): void;
   setHostFormatter(formatWithHost: ((request: FormatRequest) => string) | undefined): void;
-  createImportObject(): WebAssembly.Imports;
+  /**
+   * Creates the imports to instantiate the plugin with.
+   * @param wasmModule - Module of the plugin, which allows providing the WASI functions it imports.
+   */
+  createImportObject(wasmModule?: WebAssembly.Module): WebAssembly.Imports;
 }
 
 /** Formats code. */
