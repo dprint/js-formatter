@@ -57,6 +57,22 @@ console.log(context.formatText({
 
 The context also handles host formatting automatically, so embedded code blocks (like JSON in Markdown) will be formatted by the appropriate plugin.
 
+### WASI plugins
+
+Plugins compiled with a toolchain that needs a WASI libc (ex. .NET, Go) are provided the same sandboxed subset of WASI preview 1 as the dprint CLI. That is the clocks, sleeping, random bytes, and writing text to stdout/stderr (which is written to stderr). There are no environment variables, arguments, or file system access.
+
+### Plugin output
+
+Text a plugin writes to stdout or stderr is written to stderr by default. Provide an `onOutput` function to capture or ignore it instead:
+
+```ts
+const context = createContext(globalConfig, {
+  onOutput: (text) => console.error(text),
+});
+```
+
+The same option is accepted by `createFromBuffer`, `createFromWasmModule`, and `createStreaming`.
+
 ### Plugin NPM Packages
 
 Note: In the future I will ensure plugins are published to JSR as well.

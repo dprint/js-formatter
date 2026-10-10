@@ -9,10 +9,25 @@ export interface FormatRequest {
   overrideConfig?: Record<string, unknown>;
 }
 
+/** Options for creating a formatter. */
+export interface FormatterOptions {
+  /**
+   * Called with the text a plugin writes to stdout or stderr. Control characters
+   * other than newlines and tabs are replaced in the text.
+   * @remarks When not provided, the text is written to stderr in runtimes that have
+   * a `process` global (ex. Node.js and Deno) and is otherwise discarded.
+   */
+  onOutput?: (text: string) => void;
+}
+
 export interface Host {
   setInstance(wasmInstance: WebAssembly.Instance): void;
   setHostFormatter(formatWithHost: ((request: FormatRequest) => string) | undefined): void;
-  createImportObject(): WebAssembly.Imports;
+  /**
+   * Creates the imports to instantiate the plugin with.
+   * @param wasmModule - Module of the plugin, which allows providing the WASI functions it imports.
+   */
+  createImportObject(wasmModule?: WebAssembly.Module): WebAssembly.Imports;
 }
 
 /** Formats code. */
