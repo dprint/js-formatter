@@ -9,6 +9,7 @@
     }
   },
   "imports": {
+    "@david/publish-on-tag": "jsr:@david/publish-on-tag@0.2.0",
     "@deno/dnt": "jsr:@deno/dnt@^0.42.3",
     "@dprint/json": "npm:@dprint/json@^0.21.1",
     "@dprint/markdown": "npm:@dprint/markdown@^0.20.0",

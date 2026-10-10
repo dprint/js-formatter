@@ -12,7 +12,7 @@ jobs:
       - name: Test
         run: deno test -P
       - name: Publish on tag
-        run: deno run -A jsr:@david/publish-on-tag@0.2.0
+        run: deno run -A @david/publish-on-tag
       - name: Get tag version
         if: startsWith(github.ref, 'refs/tags/')
         id: get_tag_version
